@@ -1,0 +1,65 @@
+<script>
+    (function(){
+    
+        const links = document.querySelectorAll('a[target="_blank"]');
+    
+        if( !links ) {
+            return;
+        }
+    
+        links.forEach((link)=>{
+    
+            link.addEventListener('click',function(e){
+    
+                const currUrl = new URL(document.location.href);
+    
+                const linkUrl = new URL(this.href);
+                let title = linkUrl.host;
+    
+                if( currUrl.host == linkUrl.host ) {
+                    return;
+                }
+    
+                e.preventDefault();
+    
+                if( this.title ) {
+                    title = this.title;
+                }
+    
+                let oldOverlay;
+    
+                if( oldOverlay = document.getElementById('externalLinkModal') ) {
+                    oldOverlay.remove();
+                }
+    
+                this.overlay = document.createElement('DIV');
+    
+                this.overlay.id = 'externalLinkModal';
+                this.overlay.innerHTML = `
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="head">Sie werden auf eine externe Seite weitergeleitet.</div>
+                            <div class="description">Mit Ihrer Zustimmung werden Sie zu <span>${title}</span> weitergeleitet, das gänzlich eigenverantwortlich Ihre Daten bearbeitet. Wenn Sie keine Verarbeitung Ihrer Daten durch ${title} wünschen, klicken Sie bitte auf abrechen, um eine Weiterleitung zu verhindern.</div>
+                            <div class="buttons">
+                                <a class="button theme-button btn--yellow cancel">Abbrechen</a>
+                                <a class="button theme-button btn--yellow confirm">${title}</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+    
+                this.overlay.querySelector('a.cancel').addEventListener('click',(e)=>{
+                    this.overlay.remove();
+                });
+    
+                this.overlay.querySelector('a.confirm').addEventListener('click',(e)=>{
+                    window.open(this.href);
+                    this.overlay.remove();
+                });
+    
+                document.body.appendChild(this.overlay);
+            });
+        });
+    
+    })();
+    </script>
